@@ -33,11 +33,13 @@ setup(
     author_email='allwefantasy@gmail.com',
     url='https://github.com/allwefantasy/PyMLSQL',
     packages=['pymlsql',
-              'pymlsql.api'
+              'pymlsql.api',
+              'pymlsql.aliyun'
               ],
     include_package_data=True,
     license='http://www.apache.org/licenses/LICENSE-2.0',
-    install_requires=['py4j==0.10.8.1', 'numpy>=1.7', 'pyarrow>=%s' % _minimum_pandas_version,
+    install_requires=['py4j==0.10.8.1', 'numpy>=1.7', 'aliyun-python-sdk-ecs', 'aliyun-python-sdk-core-v3',
+                      'pyarrow>=%s' % _minimum_pandas_version,
                       'pandas>=%s' % _minimum_pyarrow_version],
     setup_requires=['pypandoc'],
     classifiers=[

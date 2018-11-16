@@ -2,3 +2,4 @@
 /dist
 /pymlsql.egg-info
 /.eggs
+__pycache__
