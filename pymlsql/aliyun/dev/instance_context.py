@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import time
-from pymlsql.aliyun.ecs_builder import ECSBuilder, ECS_STATUS_RUNNING, ECS_STATUS_STOPPED
+from pymlsql.aliyun.ecs_builder import ECSClient, ECSClientBuilder, ECS_STATUS_RUNNING, ECS_STATUS_STOPPED
 import pymlsql.aliyun.shellutils as shell
 
 logging.basicConfig(level=logging.INFO)
@@ -24,7 +24,7 @@ class ECSInstanceContext(object):
         ready = False
         while try_times > 0:
             try:
-                res = shell.ssh_exec_singe_command(ECSBuilder.home() + "/.ssh/" + self.keyPairName, hostname, "root",
+                res = shell.ssh_exec_singe_command(ECSClient.home() + "/.ssh/" + self.keyPairName, hostname, "root",
                                                    '"pwd"')
                 if res != -1:
                     try_times = 0
@@ -38,10 +38,10 @@ class ECSInstanceContext(object):
 
     def execute_shell(self, command):
         hostname = self.public_ip if self.need_public_ip else self.inter_ip
-        return shell.ssh_exec(ECSBuilder.home() + "/.ssh/" + self.keyPairName, hostname, "root", command)
+        return shell.ssh_exec(ECSClient.home() + "/.ssh/" + self.keyPairName, hostname, "root", command)
 
     def execute_shell_with_hostname_username(self, hostname, username, command):
-        return shell.ssh_exec(ECSBuilder.home() + "/.ssh/" + self.keyPairName, hostname, username, command)
+        return shell.ssh_exec(ECSClient.home() + "/.ssh/" + self.keyPairName, hostname, username, command)
 
     def start_server(self,
                      instance_type="ecs.ic5.large",
@@ -49,15 +49,21 @@ class ECSInstanceContext(object):
                      internet_max_bandwidth_out=1,
                      init_ssh_key=False,
                      timeout=60):
-        self.ecs = ECSBuilder(keyPairName=self.keyPairName)
+
+        self.ecs = ECSClientBuilder(). \
+            instance_type(instance_type). \
+            image_id(image_id). \
+            internet_max_bandwidth_out(internet_max_bandwidth_out). \
+            key_pair_name(self.keyPairName). \
+            build()
+
         if not self.instance_id:
             if init_ssh_key:
                 print(self.ecs.delete_sshkey())
-                print(self.ecs.create_sshkey(save_path=ECSBuilder.home() + "/.ssh"))
+                print(self.ecs.create_sshkey(save_path=ECSClient.home() + "/.ssh"))
 
             # create temp instance
-            self.instance_id = self.ecs.create_after_pay_instance(instance_type=instance_type, image_id=image_id,
-                                                                  internet_max_bandwidth_out=internet_max_bandwidth_out)
+            self.instance_id = self.ecs.create_after_pay_instance()
             self.ecs.wait_to_stopped_from_pending(self.instance_id, timeout)
             if self.need_public_ip:
                 self.public_ip = self.ecs.allocate_public_address(self.instance_id)

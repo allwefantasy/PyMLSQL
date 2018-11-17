@@ -19,7 +19,7 @@ ALIYUN_AKS = "AKS"
 ALIYUN_REGION = "cn-hangzhou"
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("ECSBuilder")
+logger = logging.getLogger("ECSClient")
 
 ECS_STATUS_PENDING = "Pending"
 ECS_STATUS_RUNNING = "Running"
@@ -28,16 +28,46 @@ ECS_STATUS_STARTING = "Starting"
 ECS_STATUS_STOPPING = "Stopping"
 
 
-class ECSBuilder(object):
+class ECSClientBuilder(object):
+    def __init__(self):
+        self.request = CreateInstanceRequest()
+        self.keyPairName = None
 
-    def __init__(self, keyPairName):
-        if not ECSBuilder.env(ALIYUN_AK) or not ECSBuilder.env(ALIYUN_AKS):
+    def instance_type(self, value):
+        self.request.set_InstanceType(value)
+        return self
+
+    def image_id(self, value):
+        self.request.set_ImageId(value)
+        return self
+
+    def key_pair_name(self, value):
+        self.request.set_KeyPairName(value)
+        self.keyPairName = value
+        return self
+
+    def internet_max_bandwidth_out(self, value):
+        self.request.set_InternetMaxBandwidthOut(value)
+        return self
+
+    def build(self):
+        if not self.keyPairName:
+            raise ValueError("key_pair_name should be set")
+        client = ECSClient(self.keyPairName)
+        return client
+
+
+class ECSClient(object):
+
+    def __init__(self, keyPairName, create_instance_request=None):
+        if not ECSClient.env(ALIYUN_AK) or not ECSClient.env(ALIYUN_AKS):
             raise ValueError("AK or AKS should be configured by environment")
         self.client = AcsClient(
-            ECSBuilder.env(ALIYUN_AK),
-            ECSBuilder.env(ALIYUN_AKS),
+            ECSClient.env(ALIYUN_AK),
+            ECSClient.env(ALIYUN_AKS),
             ALIYUN_REGION
         )
+        self.create_instance_request = create_instance_request
         self.keyPairName = keyPairName
 
     @staticmethod
@@ -76,17 +106,19 @@ class ECSBuilder(object):
         response = self.execute(request)
         return response
 
-    # m-bp19ibpdra8vdltxftbc
     def create_after_pay_instance(self, internet_max_bandwidth_out=1, image_id="m-bp19ibpdra8vdltxftbc",
                                   instance_type="ecs.ic5.large"):
-        request = CreateInstanceRequest()
-        request.set_ImageId(image_id)
-        request.set_InstanceType(instance_type)
-        request.set_IoOptimized('optimized')
-        request.set_SystemDiskCategory('cloud_ssd')
-        request.set_KeyPairName(self.keyPairName)
-        if internet_max_bandwidth_out > 0:
-            request.set_InternetMaxBandwidthOut(internet_max_bandwidth_out)
+        if self.create_instance_request:
+            request = self.create_instance_request
+        else:
+            request = CreateInstanceRequest()
+            request.set_ImageId(image_id)
+            request.set_InstanceType(instance_type)
+            request.set_IoOptimized('optimized')
+            request.set_SystemDiskCategory('cloud_ssd')
+            request.set_KeyPairName(self.keyPairName)
+            if internet_max_bandwidth_out > 0:
+                request.set_InternetMaxBandwidthOut(internet_max_bandwidth_out)
         response = self.execute(request)
         logger.info(response)
         instance_id = response.get('InstanceId')
@@ -174,7 +206,7 @@ class ECSBuilder(object):
         request = DescribeInstancesRequest.DescribeInstancesRequest()
         request.set_PageSize(10)
         response = self.client.do_action_with_exception(request)
-        return ECSBuilder.pretty_json(response)
+        return ECSClient.pretty_json(response)
 
     def wait_to_stopped_from_pending(self, instance_id, timeout=10):
         instances = self.get_instance_detail_by_id(instance_id=instance_id)
