@@ -3,3 +3,4 @@
 /pymlsql.egg-info
 /.eggs
 __pycache__
+pymlsql/test.py

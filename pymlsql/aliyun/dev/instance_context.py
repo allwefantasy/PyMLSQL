@@ -99,6 +99,8 @@ class ECSInstanceContext(object):
                 self.need_public_ip = True
 
     def close_server(self, timeout=60):
+        if not self.ecs:
+            self.ecs = ECSClient(self.keyPairName)
         if self.instance_id and self.ecs.check_instance_exists_by_id(self.instance_id):
             self.ecs.stop_instance(self.instance_id)
             self.ecs.wait_to_stopped_from_running(self.instance_id, timeout)

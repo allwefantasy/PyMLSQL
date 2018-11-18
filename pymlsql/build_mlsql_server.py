@@ -36,7 +36,7 @@ try:
     finally use ssh to execute remotely.
     '''
     if instance_context.is_ssh_server_ready():
-        res = instance_context.execute_shell("ls /")
+        res = instance_context.execute_shell("git clone https://github.com/allwefantasy/PyMLSQL.git .")
         # show the result
         print(res.decode("utf-8"))
 except Exception as e:
