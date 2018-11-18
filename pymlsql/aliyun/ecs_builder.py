@@ -53,7 +53,7 @@ class ECSClientBuilder(object):
     def build(self):
         if not self.keyPairName:
             raise ValueError("key_pair_name should be set")
-        client = ECSClient(self.keyPairName)
+        client = ECSClient(self.keyPairName, create_instance_request=self.request)
         return client
 
 
@@ -109,6 +109,7 @@ class ECSClient(object):
     def create_after_pay_instance(self, internet_max_bandwidth_out=1, image_id="m-bp19ibpdra8vdltxftbc",
                                   instance_type="ecs.ic5.large"):
         if self.create_instance_request:
+            logger.info("using create request from Builder")
             request = self.create_instance_request
         else:
             request = CreateInstanceRequest()
