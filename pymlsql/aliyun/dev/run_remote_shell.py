@@ -32,7 +32,7 @@ else:
         if instance_context.is_ssh_server_ready():
             with open(os.path.abspath(args.script_path), "r") as script_file:
                 content = "\n".join(script_file.readlines())
-                res = instance_context.execute_shell(content, parser.execute_user)
+                res = instance_context.execute_shell(content, args.execute_user)
                 # show the result
                 if res != -1:
                     print(res.decode("utf-8"))
