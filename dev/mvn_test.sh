@@ -67,6 +67,7 @@ execute python command:
 
 EOF
 
-python -m pymlsql.dev.run_remote_shell --script_path ${SCRIPT_FILE}
+cd ../
+python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE}
 
 
