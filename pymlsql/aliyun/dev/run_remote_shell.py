@@ -11,6 +11,7 @@ logger = logging.getLogger("build_mysql_server")
 parser = argparse.ArgumentParser(description='run shell in new ECS instance.')
 parser.add_argument('--script_path', help='the path of script will be executed', required=True)
 parser.add_argument('--instance_id', help='If you already have a instance, please set thi parameter')
+parser.add_argument('--without_stop', help='create and will not exists')
 
 args = parser.parse_args()
 
@@ -36,4 +37,6 @@ else:
     except Exception as e:
         logger.exception("Something wrong is happened", exc_info=True)
     # close and delete your instance.
+
+if not args.without_stop or args.without_stop == "true":
     instance_context.close_server()
