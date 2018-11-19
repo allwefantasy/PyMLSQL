@@ -9,6 +9,7 @@ Inputs are specified with the following environment variables:
 GIT_BRANCH - Git branch on which to make release
 SCRIPT_FILE - the script file you want execute in remote server
 MLSQL_SPARK_VERSIOIN - the spark version
+WITHOUT_STOP - whether to stop the instance
 
 EOF
   exit 1
@@ -21,7 +22,7 @@ if [[ $@ == *"help"* ]]; then
   exit_with_usage
 fi
 
-for env in GIT_BRANCH SCRIPT_FILE MLSQL_SPARK_VERSIOIN; do
+for env in GIT_BRANCH SCRIPT_FILE MLSQL_SPARK_VERSIOIN WITHOUT_STOP; do
   if [ -z "${!env}" ]; then
     echo "$env must be set to run this script; \n Please run ./mvn_test.sh help to get how to use."
     exit 1
@@ -75,6 +76,6 @@ execute python command:
 EOF
 
 
-python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE}
+python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE} --without_stop ${WITHOUT_STOP}
 
 

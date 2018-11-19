@@ -39,5 +39,5 @@ else:
         logger.exception("Something wrong is happened", exc_info=True)
     # close and delete your instance.
 
-if not args.without_stop or args.without_stop == "true":
+if not args.without_stop or args.without_stop == "false":
     instance_context.close_server()
