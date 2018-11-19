@@ -33,7 +33,8 @@ else:
                 content = "\n".join(script_file.readlines())
                 res = instance_context.execute_shell(content)
                 # show the result
-                print(res.decode("utf-8"))
+                if res != -1:
+                    print(res.decode("utf-8"))
     except Exception as e:
         logger.exception("Something wrong is happened", exc_info=True)
     # close and delete your instance.
