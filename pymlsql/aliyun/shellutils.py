@@ -97,6 +97,11 @@ def ssh_exec(keypath, hostname, username, command, execute_user):
         execute_command = "chmod u+x " + local_path + ";/bin/bash " + local_path
     else:
         tmp = "chmod u+x " + local_path + ";/bin/bash " + local_path
+        run_cmd(
+            ["ssh", "-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null", "-i", keypath,
+             username + "@" + hostname, "chown -R  " + execute_user + " " + local_path],
+            return_output=True)
+
         execute_command = "su - " + execute_user + " -c \"" + tmp + "\""
     return run_cmd(
         ["ssh", "-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null", "-i", keypath,
