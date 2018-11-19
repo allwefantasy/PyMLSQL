@@ -63,11 +63,11 @@ EOF
 # the remote server.
 cat << EOF
 execute python command:
-        python -m pymlsql.dev.run_remote_shell --script_path ${SCRIPT_FILE}
+        python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE}
 
 EOF
 
-cd ../
+
 python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE}
 
 
