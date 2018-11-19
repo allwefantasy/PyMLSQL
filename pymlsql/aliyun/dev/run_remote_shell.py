@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description='run shell in new ECS instance.')
 parser.add_argument('--script_path', help='the path of script will be executed', required=True)
 parser.add_argument('--instance_id', help='If you already have a instance, please set thi parameter')
 parser.add_argument('--without_stop', help='create and will not exists')
+parser.add_argument('--execute_user', help='the user will execute the command', required=True)
 
 args = parser.parse_args()
 
@@ -31,7 +32,7 @@ else:
         if instance_context.is_ssh_server_ready():
             with open(os.path.abspath(args.script_path), "r") as script_file:
                 content = "\n".join(script_file.readlines())
-                res = instance_context.execute_shell(content)
+                res = instance_context.execute_shell(content, parser.execute_user)
                 # show the result
                 if res != -1:
                     print(res.decode("utf-8"))
