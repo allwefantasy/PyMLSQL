@@ -86,16 +86,18 @@ class ECSInstanceContext(object):
             self.inter_ip = info["NetworkInterfaces"]["NetworkInterface"][0]["PrimaryIpAddress"]
             logger.info("start successfully instance_id:%s status:%s" % (self.instance_id, status))
         else:
+            logger.info("use instance_id: " + self.instance_id)
             instance_desc = self.ecs.get_instance_detail_by_id(self.instance_id)
             if len(instance_desc) == 0:
                 raise ValueError("instance %s is not exist" % self.instance_id)
             status = self.ecs.get_instance_status_by_id(self.instance_id)
             if status != ECS_STATUS_RUNNING and status == ECS_STATUS_STOPPED:
+                logger.info("try to start instance_id: " + self.instance_id)
                 self.ecs.start_instance(self.instance_id)
                 self.ecs.wait_to_running_from_starting(self.instance_id, timeout)
             elif status == ECS_STATUS_RUNNING:
                 # do nothing
-                pass
+                logger.info("instance_id: " + self.instance_id + " is running. Do nothing.")
             else:
                 logger.warning("instance [%s]'s status is [%s]", self.instance_id, status)
                 raise ValueError(
