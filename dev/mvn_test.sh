@@ -76,6 +76,6 @@ execute python command:
 EOF
 
 
-python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE} --without_stop ${WITHOUT_STOP} --execute_user webuser
+python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE} --without_stop ${WITHOUT_STOP} --execute_user webuser --image_id "m-bp11q5jxgj4921h8ue1h"
 
 

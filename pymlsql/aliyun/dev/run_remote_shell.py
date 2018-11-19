@@ -13,6 +13,7 @@ parser.add_argument('--script_path', help='the path of script will be executed',
 parser.add_argument('--instance_id', help='If you already have a instance, please set thi parameter')
 parser.add_argument('--without_stop', help='create and will not exists')
 parser.add_argument('--execute_user', help='the user will execute the command', required=True)
+parser.add_argument('--image_id', help='image_id', required=True)
 
 args = parser.parse_args()
 
@@ -28,7 +29,7 @@ else:
 
     try:
         # start server
-        instance_context.start_server()
+        instance_context.start_server(image_id=args.image_id)
         if instance_context.is_ssh_server_ready():
             with open(os.path.abspath(args.script_path), "r") as script_file:
                 content = "\n".join(script_file.readlines())
