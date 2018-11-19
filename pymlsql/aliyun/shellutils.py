@@ -84,7 +84,7 @@ def ssh_exec_singe_command(keypath, hostname, username, command):
         return_output=True)
 
 
-def ssh_exec(keypath, hostname, username, command):
+def ssh_exec(keypath, hostname, username, command, execute_user):
     # save command as script file
     import uuid
     local_path = "/tmp/" + str(uuid.uuid4())
@@ -93,7 +93,12 @@ def ssh_exec(keypath, hostname, username, command):
     run_cmd(["scp", "-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null", "-i", keypath, local_path,
              username + "@" + hostname + ":" + local_path],
             return_output=True)
+    if execute_user == "root":
+        execute_command = "chmod u+x " + local_path + ";/bin/bash " + local_path
+    else:
+        tmp = "chmod u+x " + local_path + ";/bin/bash " + local_path
+        execute_command = "su - " + execute_user + " -c \"" + tmp + "\""
     return run_cmd(
         ["ssh", "-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null", "-i", keypath,
-         username + "@" + hostname, "chmod u+x " + local_path + ";/bin/bash " + local_path],
+         username + "@" + hostname, execute_command],
         return_output=True)

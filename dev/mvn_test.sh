@@ -31,6 +31,13 @@ done
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
 
+source activate mlsql-3.5
+
+rm -rf /tmp/temp_ServiceFramework
+git clone --depth 1 https://github.com/allwefantasy/ServiceFramework.git /tmp/temp_ServiceFramework
+cd /tmp/temp_ServiceFramework
+mvn install -DskipTests -Pjetty-9 -Pweb-include-jetty-9
+
 MLSQL_HTTPS_REPO="https://github.com/allwefantasy/streamingpro.git"
 MLSQL_GIT_REPO="git@github.com:allwefantasy/streamingpro.git"
 

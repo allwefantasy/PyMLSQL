@@ -36,9 +36,9 @@ class ECSInstanceContext(object):
                 logger.exception("cannot connect instance ssh server")
         return ready
 
-    def execute_shell(self, command):
+    def execute_shell(self, command, execute_user="root"):
         hostname = self.public_ip if self.need_public_ip else self.inter_ip
-        return shell.ssh_exec(ECSClient.home() + "/.ssh/" + self.keyPairName, hostname, "root", command)
+        return shell.ssh_exec(ECSClient.home() + "/.ssh/" + self.keyPairName, hostname, "root", command, execute_user)
 
     def copy_from_local(self, remote_username, source, target):
         hostname = self.public_ip if self.need_public_ip else self.inter_ip
