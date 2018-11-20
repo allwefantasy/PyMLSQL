@@ -5,4 +5,4 @@ if [ -z "$1" ]; then
   exit 1
 fi
 ## start server
-python -m pymlsql.aliyun.dev.stop_release_server  --keyPairName "mlsql-build-env-local" --instance_id $1
+python -m pymlsql.aliyun.dev.stop_realse_server  --keyPairName "mlsql-build-env-local" --instance_id $1

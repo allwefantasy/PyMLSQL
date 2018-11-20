@@ -14,9 +14,6 @@ parser.add_argument('--keyPairName', help='', required=True)
 
 args = parser.parse_args()
 
-if not args.script_path.endswith(".sh"):
-    raise ValueError("script_path is not a script")
-
 # cwd = os.getcwd()
 instance_context = ECSInstanceContext(keyPairName=args.keyPairName, instance_id=args.instance_id,
                                       need_public_ip=False)
