@@ -43,10 +43,11 @@ class ECSInstanceContext(object):
     def copy_from_local(self, remote_username, source, target):
         hostname = self.public_ip if self.need_public_ip else self.inter_ip
         keypath = ECSClient.home() + "/.ssh/" + self.keyPairName
-        return shell.run_cmd(
-            ["scp", "-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null", "-i", keypath, "-r", source,
-             remote_username + "@" + hostname + ":" + target],
-            return_output=True)
+        command = ["scp", "-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null", "-i", keypath, "-r", source,
+                   remote_username + "@" + hostname + ":" + target]
+        print("execute copy command:\n%s" % " ".join(command))
+        return shell.run_cmd(command,
+                             return_output=True)
 
     def execute_shell_with_hostname_username(self, hostname, username, command):
         return shell.ssh_exec(ECSClient.home() + "/.ssh/" + self.keyPairName, hostname, username, command)
@@ -69,6 +70,7 @@ class ECSInstanceContext(object):
             if init_ssh_key:
                 print(self.ecs.delete_sshkey())
                 print(self.ecs.create_sshkey(save_path=ECSClient.home() + "/.ssh"))
+                shell.run_cmd(["chmod", "700", ECSClient.home() + "/.ssh/" + self.keyPairName])
 
             # create temp instance
             self.instance_id = self.ecs.create_after_pay_instance()
