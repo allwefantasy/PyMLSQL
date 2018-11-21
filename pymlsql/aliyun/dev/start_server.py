@@ -23,4 +23,4 @@ if args.instance_id:
 else:
     instance_context = ECSInstanceContext(keyPairName=args.keyPairName, need_public_ip=True)
 
-instance_context.start_server(image_id=args.image_id, init_ssh_key=bool(args.init_ssh_key))
+instance_context.start_server(image_id=args.image_id, init_ssh_key=(args.init_ssh_key == "true"))
