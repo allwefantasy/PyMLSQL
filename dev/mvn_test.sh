@@ -24,14 +24,14 @@ fi
 
 for env in GIT_BRANCH SCRIPT_FILE MLSQL_SPARK_VERSIOIN; do
   if [ -z "${!env}" ]; then
-    echo "$env must be set to run this script; \n Please run ./mvn_test.sh help to get how to use."
+    echo "$env must be set to run this script; \n Please run ./dev/mvn_test.sh help to get how to use."
     exit 1
   fi
 done
 
 
 if [ -z "$1" ]; then
-    echo "$env must be set to run this script; \n Please run ./mvn_test.sh help to get how to use."
+    echo "instance id should be configured"
     exit 1
 fi
 
@@ -51,7 +51,7 @@ python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE} --key
 echo "download  ServiceFramework and copy to remote"
 rm -rf temp_ServiceFramework
 git clone --depth 1 https://github.com/allwefantasy/ServiceFramework.git temp_ServiceFramework
-tar czvf temp_ServiceFramework.tar.gz temp_ServiceFramework
+tar czf temp_ServiceFramework.tar.gz temp_ServiceFramework
 python -m pymlsql.aliyun.dev.copy_from_local --source temp_ServiceFramework.tar.gz --target /home/webuser --keyPairName "mlsql-build-env-local" --execute_user root --instance_id $1
 
 
@@ -62,7 +62,7 @@ MLSQL_GIT_REPO="git@github.com:allwefantasy/streamingpro.git"
 echo "download streamingpro and copy to remote server"
 rm -rf streamingpro
 git clone ${MLSQL_GIT_REPO} -b ${GIT_BRANCH}
-tar czvf streamingpro.tar.gz streamingpro
+tar czf streamingpro.tar.gz streamingpro
 
 python -m pymlsql.aliyun.dev.copy_from_local --source streamingpro.tar.gz --target /home/webuser --keyPairName "mlsql-build-env-local" --execute_user root --instance_id $1
 
@@ -85,8 +85,8 @@ cat << EOF > ${SCRIPT_FILE}
 
 source activate mlsql-3.5
 cd /home/webuser
-tar xvf temp_ServiceFramework.tar.gz
-tar xvf streamingpro.tar.gz
+tar xf temp_ServiceFramework.tar.gz
+tar xf streamingpro.tar.gz
 EOF
 
 python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE} --keyPairName "mlsql-build-env-local" --execute_user webuser --instance_id $1
@@ -106,7 +106,6 @@ mvn install -DskipTests -Pjetty-9 -Pweb-include-jetty-9 > sf.log
 cd /home/webuser/streamingpro
 
 BASE_PROFILES="-Pscala-2.11 -Ponline -Phive-thrift-server -Pcarbondata  -Pcrawler"
-PUBLISH_SCALA_2_10=0
 
 if [[ "$MLSQL_SPARK_VERSIOIN" > "2.3" ]]; then
   BASE_PROFILES="\$BASE_PROFILES -Pdsl -Pxgboost"

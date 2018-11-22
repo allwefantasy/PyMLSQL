@@ -13,7 +13,7 @@ parser.add_argument('--instance_id', help='If you already have a instance, pleas
 parser.add_argument('--image_id', help='image_id', required=True)
 parser.add_argument('--keyPairName', help='', required=True)
 parser.add_argument('--init_ssh_key', help='', required=True)
-
+parser.add_argument('--instance_type', help='', required=True)
 args = parser.parse_args()
 
 # cwd = os.getcwd()
@@ -23,4 +23,5 @@ if args.instance_id:
 else:
     instance_context = ECSInstanceContext(keyPairName=args.keyPairName, need_public_ip=True)
 
-instance_context.start_server(image_id=args.image_id, init_ssh_key=(args.init_ssh_key == "true"))
+instance_context.start_server(image_id=args.image_id, instance_type=args.instance_type,
+                              init_ssh_key=(args.init_ssh_key == "true"))
