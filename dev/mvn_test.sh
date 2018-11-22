@@ -38,7 +38,7 @@ fi
 echo "install git in remote server"
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
-apt-get install git -y -q
+# apt-get install git -y -q
 cd /home/webuser
 rm streamingpro.tar.gz
 rm -rf streamingpro
@@ -105,7 +105,7 @@ mvn install -DskipTests -Pjetty-9 -Pweb-include-jetty-9 > sf.log
 
 cd /home/webuser/streamingpro
 
-BASE_PROFILES="-Pscala-2.11 -Ponline -Phive-thrift-server -Pcarbondata  -Pcrawler -Pautoml"
+BASE_PROFILES="-Pscala-2.11 -Ponline -Phive-thrift-server -Pcarbondata  -Pcrawler"
 PUBLISH_SCALA_2_10=0
 
 if [[ "$MLSQL_SPARK_VERSIOIN" > "2.3" ]]; then
