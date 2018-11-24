@@ -49,6 +49,16 @@ class ECSInstanceContext(object):
         return shell.run_cmd(command,
                              return_output=True)
 
+    def copy_to_local(self, remote_username, source, target):
+        hostname = self.public_ip if self.need_public_ip else self.inter_ip
+        keypath = ECSClient.home() + "/.ssh/" + self.keyPairName
+        command = ["scp", "-oStrictHostKeyChecking=no", "-oUserKnownHostsFile=/dev/null", "-i", keypath, "-r",
+                   remote_username + "@" + hostname + ":" + source,
+                   target]
+        print("execute copy command:\n%s" % " ".join(command))
+        return shell.run_cmd(command,
+                             return_output=True)
+
     def execute_shell_with_hostname_username(self, hostname, username, command):
         return shell.ssh_exec(ECSClient.home() + "/.ssh/" + self.keyPairName, hostname, username, command)
 
