@@ -25,3 +25,4 @@ else:
 
 instance_context.start_server(image_id=args.image_id, instance_type=args.instance_type,
                               init_ssh_key=(args.init_ssh_key == "true"))
+print("instance_id:" + instance_context.instance_id)
