@@ -78,7 +78,7 @@ class ECSClient(object):
     def home():
         # return shellutils.run_cmd(["eval", "echo", "~$USER"], True)
         from os.path import expanduser
-        return expanduser("~user")
+        return expanduser("~")
         # return "/Users/allwefantasy"
         # from pathlib import Path
         # return str(Path.home())
