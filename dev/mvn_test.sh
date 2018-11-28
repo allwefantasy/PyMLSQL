@@ -117,6 +117,8 @@ echo "mvn install ServiceFramework and test streamingpro"
 
 suites=""
 if [ -z ${2} ];then
+:
+else
 suites="-Dsuites=\"*${2}\""
 fi
 
@@ -144,7 +146,7 @@ fi
 BASE_PROFILES="\$BASE_PROFILES -Pspark-$MLSQL_SPARK_VERSIOIN -Pstreamingpro-spark-$MLSQL_SPARK_VERSIOIN-adaptor"
 
 echo "test streamingpro"
-mvn clean test -pl streamingpro-mlsql -am \$BASE_PROFILES ${suites}  > sg-test.log
+export MAVEN_OPTS="-Xmx6000m";mvn clean test -pl streamingpro-mlsql -am \$BASE_PROFILES ${suites}  > sg-test-${MLSQL_SPARK_VERSIOIN}.log
 
 EOF
 
@@ -153,6 +155,6 @@ python -m pymlsql.aliyun.dev.run_remote_shell \
 --script_path ${SCRIPT_FILE} ${CONNECT_SERVER_WEBUSER_PROFILE}
 
 python -m pymlsql.aliyun.dev.copy_to_local \
---source /home/webuser/streamingpro/sg-test.log \
+--source /home/webuser/streamingpro/sg-test-${MLSQL_SPARK_VERSIOIN}.log \
 --target . ${CONNECT_SERVER_ROOT_PROFILE}
 
