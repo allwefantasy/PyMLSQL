@@ -79,6 +79,7 @@ MLSQL_GIT_REPO="git@github.com:allwefantasy/streamingpro.git"
 
 echo "download streamingpro and copy to remote server"
 cd ${WORK_DIR}
+echo "current branch ${GIT_BRANCH}"
 git clone --depth 1 ${MLSQL_HTTPS_REPO} -b ${GIT_BRANCH}
 tar czf streamingpro.tar.gz streamingpro
 

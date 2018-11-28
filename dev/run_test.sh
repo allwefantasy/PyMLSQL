@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-export GIT_BRANCH=master
 
 export SCRIPT_FILE="./k_${MLSQL_SPARK_VERSIOIN}.sh"
 start_output=$(./dev/start_server.sh)

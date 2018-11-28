@@ -10,4 +10,4 @@ streamingpro*
 .DS_Store
 dev/mlsql_test.sh
 k_*.sh
-sg-test.log
+sg-test*
