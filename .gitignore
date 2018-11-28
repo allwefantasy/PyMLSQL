@@ -7,3 +7,7 @@ __pycache__
 pymlsql/test.py
 streamingpro*
 *ServiceFramework*
+.DS_Store
+dev/mlsql_test.sh
+k_*.sh
+sg-test.log

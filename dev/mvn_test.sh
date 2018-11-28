@@ -50,13 +50,14 @@ EOF
 
 instance_id=$1
 keyPairName="mlsql-build-env-local"
-CONNECT_SERVER_PROFILE="--keyPairName ${keyPairName} --execute_user root --instance_id ${instance_id}"
+CONNECT_SERVER_ROOT_PROFILE="--keyPairName ${keyPairName} --execute_user root --instance_id ${instance_id}"
+CONNECT_SERVER_WEBUSER_PROFILE="--keyPairName ${keyPairName} --execute_user webuser --instance_id ${instance_id}"
 
 python -m pymlsql.aliyun.dev.run_remote_shell --script_path ${SCRIPT_FILE} \
-${CONNECT_SERVER_PROFILE}
+${CONNECT_SERVER_ROOT_PROFILE}
 
 WORK_DIR="/tmp/${MLSQL_SPARK_VERSIOIN}"
-HOME=`pwd`
+CURRENT_HOME=`pwd`
 
 rm -rf ${WORK_DIR}
 mkdir -p ${WORK_DIR}
@@ -67,10 +68,10 @@ git clone --depth 1 https://github.com/allwefantasy/ServiceFramework.git temp_Se
 tar czf temp_ServiceFramework.tar.gz temp_ServiceFramework
 
 
-cd $HOME
+cd $CURRENT_HOME
 python -m pymlsql.aliyun.dev.copy_from_local \
 --source ${WORK_DIR}/temp_ServiceFramework.tar.gz \
---target /home/webuser ${CONNECT_SERVER_PROFILE}
+--target /home/webuser ${CONNECT_SERVER_ROOT_PROFILE}
 
 
 MLSQL_HTTPS_REPO="https://github.com/allwefantasy/streamingpro.git"
@@ -81,10 +82,10 @@ cd ${WORK_DIR}
 git clone --depth 1 ${MLSQL_HTTPS_REPO} -b ${GIT_BRANCH}
 tar czf streamingpro.tar.gz streamingpro
 
-cd $HOME
+cd $CURRENT_HOME
 python -m pymlsql.aliyun.dev.copy_from_local \
 --source ${WORK_DIR}/streamingpro.tar.gz \
---target /home/webuser  ${CONNECT_SERVER_PROFILE}
+--target /home/webuser  ${CONNECT_SERVER_ROOT_PROFILE}
 
 echo "grant the resource to webuser"
 cat << EOF > ${SCRIPT_FILE}
@@ -97,7 +98,7 @@ chown -R webuser:webuser temp_ServiceFramework.tar.gz
 EOF
 
 python -m pymlsql.aliyun.dev.run_remote_shell \
---script_path ${SCRIPT_FILE} ${CONNECT_SERVER_PROFILE}
+--script_path ${SCRIPT_FILE} ${CONNECT_SERVER_ROOT_PROFILE}
 
 echo "unzip the resource"
 cat << EOF > ${SCRIPT_FILE}
@@ -110,7 +111,7 @@ tar xf streamingpro.tar.gz
 EOF
 
 python -m pymlsql.aliyun.dev.run_remote_shell \
---script_path ${SCRIPT_FILE} ${CONNECT_SERVER_PROFILE}
+--script_path ${SCRIPT_FILE} ${CONNECT_SERVER_WEBUSER_PROFILE}
 
 echo "mvn install ServiceFramework and test streamingpro"
 
@@ -143,15 +144,15 @@ fi
 BASE_PROFILES="\$BASE_PROFILES -Pspark-$MLSQL_SPARK_VERSIOIN -Pstreamingpro-spark-$MLSQL_SPARK_VERSIOIN-adaptor"
 
 echo "test streamingpro"
-mvn test -pl streamingpro-mlsql -am \$BASE_PROFILES ${suites}  > sg-test.log
+mvn clean test -pl streamingpro-mlsql -am \$BASE_PROFILES ${suites}  > sg-test.log
 
 EOF
 
 
 python -m pymlsql.aliyun.dev.run_remote_shell \
---script_path ${SCRIPT_FILE} ${CONNECT_SERVER_PROFILE}
+--script_path ${SCRIPT_FILE} ${CONNECT_SERVER_WEBUSER_PROFILE}
 
 python -m pymlsql.aliyun.dev.copy_to_local \
---source /home/webuser/streamingpro/sg-test.log
---target . ${CONNECT_SERVER_PROFILE}
+--source /home/webuser/streamingpro/sg-test.log \
+--target . ${CONNECT_SERVER_ROOT_PROFILE}
 

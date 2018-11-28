@@ -3,7 +3,7 @@ import os
 import json
 import logging
 import time
-from os.path import expanduser
+import pymlsql.aliyun.shellutils as shellutils
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkecs.request.v20140526.AllocatePublicIpAddressRequest import AllocatePublicIpAddressRequest
 from aliyunsdkecs.request.v20140526.CreateInstanceRequest import CreateInstanceRequest
@@ -76,7 +76,12 @@ class ECSClient(object):
 
     @staticmethod
     def home():
-        return expanduser("~")
+        # return shellutils.run_cmd(["eval", "echo", "~$USER"], True)
+        from os.path import expanduser
+        return expanduser("~user")
+        # return "/Users/allwefantasy"
+        # from pathlib import Path
+        # return str(Path.home())
 
     # We should create sshkey first then create instance
     def create_sshkey(self, save_path):
