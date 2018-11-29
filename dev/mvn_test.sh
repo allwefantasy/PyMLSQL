@@ -41,6 +41,8 @@ echo "install git in remote server"
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
 # apt-get install git -y -q
+apt-get install wget -y -q
+apt-get install gzip -y -q
 cd /home/webuser
 rm streamingpro.tar.gz
 rm -rf streamingpro
@@ -167,6 +169,7 @@ BASE_PROFILES="\$BASE_PROFILES -Pspark-$MLSQL_SPARK_VERSIOIN -Pstreamingpro-spar
 
 echo "test streamingpro"
 export MAVEN_OPTS="-Xmx6000m";mvn clean test -pl streamingpro-mlsql -am \$BASE_PROFILES ${suites}  > sg-test-${MLSQL_SPARK_VERSIOIN}.log
+gzip sg-test-${MLSQL_SPARK_VERSIOIN}.log
 
 EOF
 
@@ -175,6 +178,6 @@ python -m pymlsql.aliyun.dev.run_remote_shell \
 --script_path ${SCRIPT_FILE} ${CONNECT_SERVER_WEBUSER_PROFILE}
 
 python -m pymlsql.aliyun.dev.copy_to_local \
---source /home/webuser/streamingpro/sg-test-${MLSQL_SPARK_VERSIOIN}.log \
+--source /home/webuser/streamingpro/sg-test-${MLSQL_SPARK_VERSIOIN}.log.gz \
 --target . ${CONNECT_SERVER_ROOT_PROFILE}
 
