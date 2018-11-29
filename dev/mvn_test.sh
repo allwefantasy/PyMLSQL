@@ -80,7 +80,20 @@ MLSQL_GIT_REPO="git@github.com:allwefantasy/streamingpro.git"
 echo "download streamingpro and copy to remote server"
 cd ${WORK_DIR}
 echo "current branch ${GIT_BRANCH}"
-git clone --depth 1 ${MLSQL_HTTPS_REPO} -b ${GIT_BRANCH}
+
+if [[ -z "${LOCAL_MLSQL_PATH}" ]];then
+    git clone --depth 1 ${MLSQL_HTTPS_REPO} -b ${GIT_BRANCH}
+else
+    cp -r ${LOCAL_MLSQL_PATH} .
+    cd streamingpro
+    if [[ ${GIT_BRANCH} != "master" ]];then
+        git fetch origin ${GIT_BRANCH}:${GIT_BRANCH}
+        git checkout ${GIT_BRANCH}
+    fi
+    rm -rf .git
+    cd ..
+fi
+
 tar czf streamingpro.tar.gz streamingpro
 
 cd $CURRENT_HOME
@@ -128,6 +141,12 @@ cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
 
 source activate mlsql-3.5
+
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --set show_channel_urls yes
+mkdir ~/.pip
+echo -e "[global]\ntrusted-host = mirrors.aliyun.com\nindex-url = https://mirrors.aliyun.com/pypi/simple" > ~/.pip/pip.conf
 
 cd /home/webuser/temp_ServiceFramework
 
