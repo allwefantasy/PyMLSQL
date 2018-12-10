@@ -11,3 +11,4 @@ streamingpro*
 dev/mlsql_test.sh
 k_*.sh
 sg-test*
+/build
