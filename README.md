@@ -12,6 +12,14 @@ in MLSQL.
 pip install pymlsql
 ``` 
 
+You can also git clone this project and install manually:
+
+``` shell
+# please make sure the x.x.x is replaced by the correct version.
+pip uninstall -y pymlsql && python setup.py sdist bdist_wheel &&
+cd ./dist/ && pip install pymlsql-x.x.x-py2.py3-none-any.whl && cd -
+```
+
 ## Aliyun Cloud example:
 
 Make sure AK/AKS are exported in command line.
@@ -90,3 +98,5 @@ INFO:ECSClient:[running -> stopped] [current status: Stopping]
 INFO:ECSClient:wait_to_stopped_from_running success: [Stopped]
 INFO:ECSClient:successfully delete instance [i-bp1atjyfwf1ihqfj1y9c]
 ```
+
+
