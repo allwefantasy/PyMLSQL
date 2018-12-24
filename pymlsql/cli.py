@@ -30,7 +30,13 @@ def cli():
               help="")
 @click.option("--need-public-ip", "-p", metavar="needPublicIp", default="true",
               help="")
-def start(instance_id, image_id, instance_type, key_pair_name, init_ssh_key, need_public_ip):
+@click.option("--security-group", "-g", metavar="security_group",
+              help="")
+def start(instance_id, image_id, instance_type, key_pair_name, init_ssh_key, need_public_ip, security_group):
+    params = {}
+    if security_group:
+        params["security_group"] = security_group
+
     try:
         if instance_id:
             instance_context = ECSInstanceContext(keyPairName=key_pair_name, instance_id=instance_id,
@@ -38,9 +44,11 @@ def start(instance_id, image_id, instance_type, key_pair_name, init_ssh_key, nee
         else:
             instance_context = ECSInstanceContext(keyPairName=key_pair_name, need_public_ip=(need_public_ip == "true"))
 
-        instance_context.start_server(image_id=image_id, instance_type=instance_type,
+        instance_context.start_server(image_id=image_id, instance_type=instance_type, params=params,
                                       init_ssh_key=(init_ssh_key == "true"))
         print("instance_id:" + instance_context.instance_id)
+        print("public_ip:" + instance_context.public_ip)
+        print("intern_ip:" + instance_context.inter_ip)
     except Exception as e:
         eprint("=== %s ===" % e)
         sys.exit(1)
@@ -76,6 +84,8 @@ def copy_from_local(instance_id, key_pair_name, execute_user, source, target):
     try:
         instance_context = ECSInstanceContext(keyPairName=key_pair_name, instance_id=instance_id,
                                               need_public_ip=False)
+        instance_context.start_server(image_id=None, instance_type=None,
+                                      init_ssh_key=False)
         if instance_context.is_ssh_server_ready():
             instance_context.copy_from_local(execute_user, source, target)
     except Exception as e:
@@ -98,6 +108,8 @@ def copy_to_local(instance_id, key_pair_name, execute_user, source, target):
     try:
         instance_context = ECSInstanceContext(keyPairName=key_pair_name, instance_id=instance_id,
                                               need_public_ip=False)
+        instance_context.start_server(image_id=None, instance_type=None,
+                                      init_ssh_key=False)
         if instance_context.is_ssh_server_ready():
             instance_context.copy_to_local(execute_user, source, target)
     except Exception as e:

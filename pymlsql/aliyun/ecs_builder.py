@@ -41,6 +41,10 @@ class ECSClientBuilder(object):
         self.request.set_ImageId(value)
         return self
 
+    def security_group(self, value):
+        self.request.set_SecurityGroupId(value)
+        return self
+
     def key_pair_name(self, value):
         self.request.set_KeyPairName(value)
         self.keyPairName = value

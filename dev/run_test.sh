@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 export SCRIPT_FILE="./k_${MLSQL_SPARK_VERSIOIN}.sh"
 start_output=$(./dev/start_server.sh)
 echo ----${start_output}-----

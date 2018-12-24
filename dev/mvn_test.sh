@@ -150,11 +150,6 @@ conda config --set show_channel_urls yes
 mkdir ~/.pip
 echo -e "[global]\ntrusted-host = mirrors.aliyun.com\nindex-url = https://mirrors.aliyun.com/pypi/simple" > ~/.pip/pip.conf
 
-cd /home/webuser/temp_ServiceFramework
-
-echo "install ServiceFramework"
-mvn install -DskipTests -Pjetty-9 -Pweb-include-jetty-9 > sf.log
-
 cd /home/webuser/streamingpro
 
 BASE_PROFILES="-Pscala-2.11 -Ponline -Phive-thrift-server -Pcarbondata  -Pcrawler -Punit-test"

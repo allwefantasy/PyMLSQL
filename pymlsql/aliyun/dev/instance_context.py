@@ -66,16 +66,20 @@ class ECSInstanceContext(object):
                      instance_type="ecs.ic5.large",
                      image_id="ubuntu_16_0402_64_20G_alibase_20180409.vhd",
                      internet_max_bandwidth_out=1,
+                     params={},
                      init_ssh_key=False,
                      timeout=60):
 
-        self.ecs = ECSClientBuilder(). \
+        builder = ECSClientBuilder(). \
             instance_type(instance_type). \
             image_id(image_id). \
             internet_max_bandwidth_out(internet_max_bandwidth_out). \
-            key_pair_name(self.keyPairName). \
-            build()
+            key_pair_name(self.keyPairName)
 
+        for key, value in params.items():
+            getattr(builder, key)(value)
+
+        self.ecs = builder.build()
         if not self.instance_id:
             if init_ssh_key:
                 print(self.ecs.delete_sshkey())
