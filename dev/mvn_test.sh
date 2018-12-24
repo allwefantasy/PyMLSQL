@@ -157,7 +157,7 @@ mvn install -DskipTests -Pjetty-9 -Pweb-include-jetty-9 > sf.log
 
 cd /home/webuser/streamingpro
 
-BASE_PROFILES="-Pscala-2.11 -Ponline -Phive-thrift-server -Pcarbondata  -Pcrawler"
+BASE_PROFILES="-Pscala-2.11 -Ponline -Phive-thrift-server -Pcarbondata  -Pcrawler -Punit-test"
 
 if [[ "$MLSQL_SPARK_VERSIOIN" > "2.3" ]]; then
   BASE_PROFILES="\$BASE_PROFILES -Pdsl -Pxgboost"
