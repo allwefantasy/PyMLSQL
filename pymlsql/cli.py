@@ -47,9 +47,9 @@ def start(instance_id, image_id, instance_type, key_pair_name, init_ssh_key, nee
 
         instance_context.start_server(image_id=image_id, instance_type=instance_type, params=params,
                                       init_ssh_key=(init_ssh_key == "true"))
-        print("instance_id:" + instance_context.instance_id)
-        print("public_ip:" + instance_context.public_ip)
-        print("intern_ip:" + instance_context.inter_ip)
+        print("instance_id:%s" % instance_context.instance_id)
+        print("public_ip:%s" % instance_context.public_ip)
+        print("intern_ip:%s" % instance_context.inter_ip)
     except Exception as e:
         eprint("=== %s ===" % e)
         sys.exit(1)
