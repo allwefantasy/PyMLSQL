@@ -142,6 +142,8 @@ def exec_shell(instance_id, key_pair_name, script_file, execute_user, need_publi
                 content = "\n".join(script_file.readlines())
                 res = instance_context.execute_shell(content, execute_user)
                 # show the result
+                if res == -1:
+                    sys.exit(1)
                 if res != -1:
                     print(res.decode("utf-8"))
     except Exception as e:
