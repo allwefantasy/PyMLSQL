@@ -26,7 +26,7 @@ Make sure AK/AKS are exported in command line.
 
 ```shell
 # when this is your first time to use create a ecs, please set  init-ssh-key to true
-pymlsql start --image-id m-bp13ubsorlrxdb9lmv2x --key-pair-name mlsql-build-env-local --init-ssh-key false
+start_out=$(pymlsql start --image-id m-bp13ubsorlrxdb9lmv2x --key-pair-name mlsql-build-env-local --init-ssh-key false)
 
 output:
 
@@ -46,9 +46,9 @@ INFO:ECSClient:[starting -> running] [current status: Starting]
 INFO:InstanceContext:start successfully instance_id:i-bp1atjyfwf1ihqfj1y9c status:Running
 instance_id:i-bp1atjyfwf1ihqfj1y9c
 
-instance_id=$(echo ${start_output}|grep '^instance_id:'|cut -d ':' -f2)
+instance_id=$(echo "${start_output}"|grep '^instance_id:'|cut -d ':' -f2)
 # you can export MLSQL_KEY_PARE_NAME to avoid configure key-pair-name every time.
-pymlsql exec --instance-id ${instance_id}  --key-pair-name mlsql-build-env-local \
+pymlsql exec_shell --instance-id ${instance_id}  --key-pair-name mlsql-build-env-local \
 --script-file /tmp/k.sh \ 
 --execute-user root 
 

@@ -129,7 +129,7 @@ def copy_to_local(instance_id, key_pair_name, execute_user, source, target):
               help="")
 @click.option("--need-public-ip", "-p", metavar="needPublicIp", default="false",
               help="")
-def exec(instance_id, key_pair_name, script_file, execute_user, need_public_ip):
+def exec_shell(instance_id, key_pair_name, script_file, execute_user, need_public_ip):
     try:
         import os
         instance_context = ECSInstanceContext(keyPairName=key_pair_name, instance_id=instance_id,

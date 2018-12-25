@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 export MLSQL_KEY_PARE_NAME=mlsql-build-env-local
-export MLSQL_RELEASE_DIR="/Users/allwefantasy/CSDNWorkSpace/streamingpro-spark-2.3.x/dev/create-release/"
 export MLSQL_TAR="streamingpro-spark_2.3-1.1.6.tar.gz"
 export MLSQL_NAME="streamingpro-spark_2.3-1.1.6"
 export SCRIPT_FILE="/tmp/k.sh"
@@ -29,7 +28,7 @@ cat << EOF > ${SCRIPT_FILE}
 hostname
 EOF
 
-export master_hostname=$(pymlsql exec --instance-id ${instance_id} --script-file ${SCRIPT_FILE} --execute-user root)
+export master_hostname=$(pymlsql exec_shell --instance-id ${instance_id} --script-file ${SCRIPT_FILE} --execute-user root)
 
 
 echo "Start spark master"
@@ -42,7 +41,7 @@ mkdir -p ~/.ssh
 ./sbin/start-master.sh -h ${inter_ip}
 EOF
 
-pymlsql exec --instance-id ${instance_id} \
+pymlsql exec_shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
@@ -67,7 +66,7 @@ chmod 600 /home/webuser/.ssh/mlsql-build-env-local
 chmod u+x /home/webuser/start-slaves.sh
 EOF
 
-pymlsql exec --instance-id ${instance_id} \
+pymlsql exec_shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user root
 
@@ -90,7 +89,7 @@ fi
 
 EOF
 
-pymlsql exec --instance-id ${instance_id} \
+pymlsql exec_shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
@@ -112,27 +111,27 @@ export SCRIPT_FILE="/tmp/k.sh"
 ./start-slaves.sh
 EOF
 
-pymlsql exec --instance-id ${instance_id} \
+pymlsql exec_shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
 
-echo "Copy MLSQL distribution to master"
-pymlsql copy-from-local --instance-id ${instance_id} --execute-user root \
---source ${MLSQL_RELEASE_DIR}/${MLSQL_TAR} \
---target /home/webuser
+echo "Download MLSQL to master"
 
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
-
-source activate mlsql-3.5
-
 cd /home/webuser
+
+export AK=${AK}
+export AKS=${AKS}
+
+
+pymlsql oss-download --bucket-name mlsql-release-repo --source ${MLSQL_TAR}  --target ${MLSQL_TAR}
 tar xf ${MLSQL_TAR}
 chown -R webuser:webuser ${MLSQL_NAME}
 EOF
 
-pymlsql exec --instance-id ${instance_id} \
+pymlsql exec_shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user root
 
@@ -169,7 +168,7 @@ nohup ./bin/spark-submit --class streaming.core.StreamingApp \
         -streaming.enableHiveSupport false > /dev/null 2>&1 &
 EOF
 
-pymlsql exec --instance-id ${instance_id} \
+pymlsql exec_shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
