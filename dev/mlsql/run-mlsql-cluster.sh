@@ -9,7 +9,7 @@ set -e
 set -o pipefail
 
 echo "Create ECS instance for master"
-start_output=$(pymlsql start --image-id m-bp13ubsorlrxdb9lmv2x --init-ssh-key false --security-group sg-bp1hi23xfzybp0exjp8a)
+start_output=$(pymlsql start --image-id m-bp13ubsorlrxdb9lmv2x --need-public-ip true --init-ssh-key false --security-group sg-bp1hi23xfzybp0exjp8a)
 echo ----"${start_output}"-----
 
 export instance_id=$(echo "${start_output}"|grep '^instance_id:'|cut -d ':' -f2)

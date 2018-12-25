@@ -5,6 +5,7 @@ import sys
 import click
 from click import UsageError
 from pymlsql.aliyun.dev.instance_context import ECSInstanceContext
+from pymlsql.aliyun.dev.oss_context import OssInstance
 
 
 def eprint(*args, **kwargs):
@@ -143,6 +144,26 @@ def exec(instance_id, key_pair_name, script_file, execute_user, need_public_ip):
                 # show the result
                 if res != -1:
                     print(res.decode("utf-8"))
+    except Exception as e:
+        eprint("=== %s ===" % e)
+        sys.exit(1)
+
+
+@cli.command()
+@click.option("--access-key", "-a", metavar="AccessKey", required=True, envvar="AK",
+              help="", default=None)
+@click.option("--access-key-secret", "-s", metavar="AccessKeySecret", required=True, envvar="AKS",
+              help="")
+@click.option("--bucket-name", metavar="BucketName", required=True,
+              help="")
+@click.option("--source", metavar="source", required=True,
+              help="")
+@click.option("--target", metavar="target", required=True,
+              help="")
+def oss_download(access_key, access_key_secret, bucket_name, source, target):
+    try:
+        instance = OssInstance(access_key, access_key_secret)
+        instance.download(bucket_name, source, target)
     except Exception as e:
         eprint("=== %s ===" % e)
         sys.exit(1)
