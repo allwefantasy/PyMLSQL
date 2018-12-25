@@ -3,33 +3,42 @@ export MLSQL_KEY_PARE_NAME=mlsql-build-env-local
 export MLSQL_RELEASE_DIR="/Users/allwefantasy/CSDNWorkSpace/streamingpro-spark-2.3.x/dev/create-release/"
 export MLSQL_TAR="streamingpro-spark_2.3-1.1.6.tar.gz"
 export MLSQL_NAME="streamingpro-spark_2.3-1.1.6"
-SCRIPT_FILE="/tmp/k.sh"
+export SCRIPT_FILE="/tmp/k.sh"
 
-echo "Create instance for master"
+set -e
+set -o pipefail
+
+echo "Create ECS instance for master"
 start_output=$(pymlsql start --image-id m-bp13ubsorlrxdb9lmv2x --init-ssh-key false --security-group sg-bp1hi23xfzybp0exjp8a)
-echo ----${start_output}-----
-instance_id=$(echo ${start_output}|grep '^instance_id:'|cut -d ':' -f2)
-public_ip=$(echo ${start_output}|grep '^public_ip:'|cut -d ':' -f2)
-inter_ip=$(echo ${start_output}|grep '^intern_ip:'|cut -d ':' -f2)
-echo "Master instance id is:${instance_id}"
+echo ----"${start_output}"-----
 
-echo "get master hostname"
+export instance_id=$(echo "${start_output}"|grep '^instance_id:'|cut -d ':' -f2)
+export public_ip=$(echo "${start_output}"|grep '^public_ip:'|cut -d ':' -f2)
+export inter_ip=$(echo "${start_output}"|grep '^intern_ip:'|cut -d ':' -f2)
+
+cat << EOF
+master instance_id : ${instance_id}
+master public_ip : ${public_ip}
+master inter_ip : ${inter_ip}
+EOF
+
+
+echo "Fetch master hostname"
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
-source activate mlsql-3.5
-cd /home/webuser/apps/spark-2.3
 hostname
 EOF
 
-master_hostname=$(pymlsql exec --instance-id ${instance_id} --script-file ${SCRIPT_FILE} --execute-user root)
+export master_hostname=$(pymlsql exec --instance-id ${instance_id} --script-file ${SCRIPT_FILE} --execute-user root)
 
 
-echo "start spark master"
+echo "Start spark master"
 
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
 source activate mlsql-3.5
 cd /home/webuser/apps/spark-2.3
+mkdir -p ~/.ssh
 ./sbin/start-master.sh -h ${inter_ip}
 EOF
 
@@ -38,42 +47,70 @@ pymlsql exec --instance-id ${instance_id} \
 --execute-user webuser
 
 
-echo "Create instance for slave"
-start_output=$(pymlsql start --image-id m-bp13ubsorlrxdb9lmv2x --init-ssh-key false --security-group sg-bp1hi23xfzybp0exjp8a)
-echo ----${start_output}-----
-slave_instance_id=$(echo ${start_output}|grep '^instance_id:'|cut -d ':' -f2)
-echo "slave instance id is:${slave_instance_id}"
+echo "copy ssh file and script to master, so we can create/start slave in master"
+pymlsql copy-from-local --instance-id ${instance_id} --execute-user root \
+--source /Users/allwefantasy/.ssh/mlsql-build-env-local \
+--target /home/webuser/.ssh/
 
 
-echo "configure spark slave"
+pymlsql copy-from-local --instance-id ${instance_id} --execute-user root \
+--source start-slaves.sh \
+--target /home/webuser
+
+echo "configure auth of the script"
 
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
-source activate mlsql-3.5
-echo "${inter_ip} ${master_hostname}" >> /etc/hosts
+chown -R webuser:webuser /home/webuser/start-slaves.sh
+chown -R webuser:webuser /home/webuser/.ssh/mlsql-build-env-local
+chmod 600 /home/webuser/.ssh/mlsql-build-env-local
+chmod u+x /home/webuser/start-slaves.sh
 EOF
 
-pymlsql exec --instance-id ${slave_instance_id} \
+pymlsql exec --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user root
 
-
-echo "start spark slave"
-
 cat << EOF > ${SCRIPT_FILE}
 #!/usr/bin/env bash
 source activate mlsql-3.5
-cd /home/webuser/apps/spark-2.3
-./sbin/start-slave.sh spark://${inter_ip}:7077
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --set show_channel_urls yes
+mkdir ~/.pip
+echo -e "[global]\ntrusted-host = mirrors.aliyun.com\nindex-url = https://mirrors.aliyun.com/pypi/simple" > ~/.pip/pip.conf
+pip install pymlsql
 EOF
 
-pymlsql exec --instance-id ${slave_instance_id} \
+pymlsql exec --instance-id ${instance_id} \
+--script-file ${SCRIPT_FILE} \
+--execute-user webuser
+
+echo "run start slave script in master"
+cat << EOF > ${SCRIPT_FILE}
+#!/usr/bin/env bash
+source activate mlsql-3.5
+cd /home/webuser
+
+export instance_id=${instance_id}
+export public_ip=${public_ip}
+export inter_ip=${inter_ip}
+export master_hostname=${master_hostname}
+export MLSQL_KEY_PARE_NAME=mlsql-build-env-local
+export AK=${AK}
+export AKS=${AKS}
+export SCRIPT_FILE="/tmp/k.sh"
+
+./start-slaves.sh
+EOF
+
+pymlsql exec --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
 
-echo "Copy MLSQL_TAR to master and extract"
-pymlsql copy_from_local --instance-id ${instance_id} --execute-user root \
+echo "Copy MLSQL distribution to master"
+pymlsql copy-from-local --instance-id ${instance_id} --execute-user root \
 --source ${MLSQL_RELEASE_DIR}/${MLSQL_TAR} \
 --target /home/webuser
 
