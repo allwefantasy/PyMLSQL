@@ -122,7 +122,8 @@ class ECSInstanceContext(object):
             public_addresses = instance_desc[0]["PublicIpAddress"]["IpAddress"]
             if len(public_addresses) > 0:
                 self.public_ip = public_addresses[0]
-                self.need_public_ip = True
+                if self.public_ip:
+                    self.need_public_ip = True
             logger.info("need_public_ip:[%s] inter_ip:[%s] public_ip:[%s]" % (
                 self.need_public_ip, self.inter_ip, self.public_ip))
 
