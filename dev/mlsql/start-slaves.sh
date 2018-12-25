@@ -13,7 +13,7 @@ cat << EOF > ${SCRIPT_FILE}
 echo "${inter_ip} ${master_hostname}" >> /etc/hosts
 EOF
 
-pymlsql exec_shell --instance-id ${slave_instance_id} \
+pymlsql exec-shell --instance-id ${slave_instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user root
 
@@ -27,6 +27,6 @@ cd /home/webuser/apps/spark-2.3
 ./sbin/start-slave.sh spark://${inter_ip}:7077
 EOF
 
-pymlsql exec_shell --instance-id ${slave_instance_id} \
+pymlsql exec-shell --instance-id ${slave_instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser

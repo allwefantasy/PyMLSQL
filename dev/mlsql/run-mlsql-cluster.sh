@@ -28,7 +28,7 @@ cat << EOF > ${SCRIPT_FILE}
 hostname
 EOF
 
-export master_hostname=$(pymlsql exec_shell --instance-id ${instance_id} --script-file ${SCRIPT_FILE} --execute-user root)
+export master_hostname=$(pymlsql exec-shell --instance-id ${instance_id} --script-file ${SCRIPT_FILE} --execute-user root)
 
 
 echo "Start spark master"
@@ -41,7 +41,7 @@ mkdir -p ~/.ssh
 ./sbin/start-master.sh -h ${inter_ip}
 EOF
 
-pymlsql exec_shell --instance-id ${instance_id} \
+pymlsql exec-shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
@@ -66,7 +66,7 @@ chmod 600 /home/webuser/.ssh/mlsql-build-env-local
 chmod u+x /home/webuser/start-slaves.sh
 EOF
 
-pymlsql exec_shell --instance-id ${instance_id} \
+pymlsql exec-shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user root
 
@@ -89,7 +89,7 @@ fi
 
 EOF
 
-pymlsql exec_shell --instance-id ${instance_id} \
+pymlsql exec-shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
@@ -111,7 +111,7 @@ export SCRIPT_FILE="/tmp/k.sh"
 ./start-slaves.sh
 EOF
 
-pymlsql exec_shell --instance-id ${instance_id} \
+pymlsql exec-shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
@@ -131,7 +131,7 @@ tar xf ${MLSQL_TAR}
 chown -R webuser:webuser ${MLSQL_NAME}
 EOF
 
-pymlsql exec_shell --instance-id ${instance_id} \
+pymlsql exec-shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user root
 
@@ -168,7 +168,7 @@ nohup ./bin/spark-submit --class streaming.core.StreamingApp \
         -streaming.enableHiveSupport false > /dev/null 2>&1 &
 EOF
 
-pymlsql exec_shell --instance-id ${instance_id} \
+pymlsql exec-shell --instance-id ${instance_id} \
 --script-file ${SCRIPT_FILE} \
 --execute-user webuser
 
