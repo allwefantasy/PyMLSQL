@@ -210,7 +210,7 @@ class ECSClient(object):
 
     @staticmethod
     def pretty_json(item):
-        return json.dumps(json.loads(item), indent=4, separators=(',', ': '))
+        return json.dumps(json.loads(item.decode("utf-8")), indent=4, separators=(',', ': '))
 
     def show_instances(self):
         request = DescribeInstancesRequest.DescribeInstancesRequest()
@@ -272,4 +272,4 @@ class ECSClient(object):
 
     def execute(self, request):
         response = self.client.do_action_with_exception(request)
-        return json.loads(response)
+        return json.loads(response.decode("utf-8"))
