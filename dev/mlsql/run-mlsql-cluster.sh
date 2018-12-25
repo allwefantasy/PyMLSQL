@@ -79,7 +79,15 @@ conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/m
 conda config --set show_channel_urls yes
 mkdir ~/.pip
 echo -e "[global]\ntrusted-host = mirrors.aliyun.com\nindex-url = https://mirrors.aliyun.com/pypi/simple" > ~/.pip/pip.conf
-pip install pymlsql
+
+if [[ -z "${PyMLSQL_PIP}" ]];then
+    git clone https://github.com/allwefantasy/PyMLSQL.git
+    cd PyMLSQL
+    rm -rf ./dist && pip uninstall -y pymlsql && python setup.py sdist bdist_wheel && cd ./dist/ && pip install pymlsql-1.1.6.2-py2.py3-none-any.whl && cd -
+else
+    pip install pymlsql
+fi
+
 EOF
 
 pymlsql exec --instance-id ${instance_id} \

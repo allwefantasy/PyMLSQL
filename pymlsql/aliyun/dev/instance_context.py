@@ -123,6 +123,8 @@ class ECSInstanceContext(object):
             if len(public_addresses) > 0:
                 self.public_ip = public_addresses[0]
                 self.need_public_ip = True
+            logger.info("need_public_ip:[%s] inter_ip:[%s] public_ip:[%s]" % (
+                self.need_public_ip, self.inter_ip, self.public_ip))
 
     def close_server(self, timeout=60):
         if not self.ecs:
