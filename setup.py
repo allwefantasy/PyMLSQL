@@ -44,6 +44,7 @@ setup(
         'click>=6.7',
         'py4j==0.10.8.1',
         'numpy>=1.7',
+        'oss2>=2.6.0',
         'aliyun-python-sdk-ecs',
         'pyarrow>=%s' % _minimum_pyarrow_version,
         'pandas>=%s' % _minimum_pandas_version],
