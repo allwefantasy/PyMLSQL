@@ -34,6 +34,7 @@ class ECSInstanceContext(object):
                     time.sleep(3)
             except Exception as e:
                 logger.exception("cannot connect instance ssh server")
+                break
         return ready
 
     def execute_shell(self, command, execute_user="root"):
