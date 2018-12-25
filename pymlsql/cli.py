@@ -28,7 +28,7 @@ def cli():
               help="")
 @click.option("--init-ssh-key", "-s", metavar="initSSHKey", default="true",
               help="")
-@click.option("--need-public-ip", "-p", metavar="needPublicIp", default="true",
+@click.option("--need-public-ip", "-p", metavar="needPublicIp", default="false",
               help="")
 @click.option("--security-group", "-g", metavar="security_group",
               help="")
@@ -126,7 +126,7 @@ def copy_to_local(instance_id, key_pair_name, execute_user, source, target):
               help="")
 @click.option("--execute-user", metavar="execute_user", required=True,
               help="")
-@click.option("--need-public-ip", "-p", metavar="needPublicIp", default="true",
+@click.option("--need-public-ip", "-p", metavar="needPublicIp", default="false",
               help="")
 def exec(instance_id, key_pair_name, script_file, execute_user, need_public_ip):
     try:
