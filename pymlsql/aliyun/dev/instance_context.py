@@ -69,7 +69,7 @@ class ECSInstanceContext(object):
                      internet_max_bandwidth_out=1,
                      params={},
                      init_ssh_key=False,
-                     timeout=60):
+                     timeout=600):
 
         builder = ECSClientBuilder(). \
             instance_type(instance_type). \
@@ -128,7 +128,7 @@ class ECSInstanceContext(object):
             logger.info("need_public_ip:[%s] inter_ip:[%s] public_ip:[%s]" % (
                 self.need_public_ip, self.inter_ip, self.public_ip))
 
-    def close_server(self, timeout=60):
+    def close_server(self, timeout=600):
         if not self.ecs:
             self.ecs = ECSClient(self.keyPairName)
         if self.instance_id and self.ecs.check_instance_exists_by_id(self.instance_id):

@@ -162,10 +162,38 @@ def exec_shell(instance_id, key_pair_name, script_file, execute_user, need_publi
               help="")
 @click.option("--target", metavar="target", required=True,
               help="")
-def oss_download(access_key, access_key_secret, bucket_name, source, target):
+@click.option("--endpoint", metavar="endpoint", required=False,
+              help="")
+def oss_download(access_key, access_key_secret, bucket_name, source, target, endpoint):
     try:
-        instance = OssInstance(access_key, access_key_secret)
+        if not endpoint:
+            endpoint = "oss-cn-hangzhou-internal.aliyuncs.com"
+        instance = OssInstance(access_key, access_key_secret, endpoint)
         instance.download(bucket_name, source, target)
+    except Exception as e:
+        eprint("=== %s ===" % e)
+        sys.exit(1)
+
+
+@cli.command()
+@click.option("--access-key", "-a", metavar="AccessKey", required=True, envvar="AK",
+              help="", default=None)
+@click.option("--access-key-secret", "-s", metavar="AccessKeySecret", required=True, envvar="AKS",
+              help="")
+@click.option("--bucket-name", metavar="BucketName", required=True,
+              help="")
+@click.option("--source", metavar="source", required=True,
+              help="")
+@click.option("--target", metavar="target", required=True,
+              help="")
+@click.option("--endpoint", metavar="endpoint", required=False,
+              help="")
+def oss_upload(access_key, access_key_secret, bucket_name, source, target, endpoint):
+    try:
+        if not endpoint:
+            endpoint = "oss-cn-hangzhou-internal.aliyuncs.com"
+        instance = OssInstance(access_key, access_key_secret, endpoint)
+        instance.upload(bucket_name, target, source)
     except Exception as e:
         eprint("=== %s ===" % e)
         sys.exit(1)
